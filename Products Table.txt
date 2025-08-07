@@ -1,0 +1,85 @@
+create database Exa;
+ use exa;
+CREATE TABLE Products (
+    -> product_id INT PRIMARY KEY,
+    -> product_name VARCHAR(100),
+    -> category VARCHAR(50),
+    -> unit_price DECIMAL(10, 2)
+    -> );
+ INSERT INTO Products (product_id, product_name, category, unit_price) VALUES(101,'Laptop','Electronics',500.00),(102,'Smartphone','Electronics',300.00),(103,'Headphone','Electronics',30.00),(104,'keyboard','Electronics',20.00),(105,'Mouse','Electronics',15.00);
+mysql> select * from Products;
++------------+--------------+-------------+------------+
+| product_id | product_name | category    | unit_price |
++------------+--------------+-------------+------------+
+|        101 | Laptop       | Electronics |     500.00 |
+|        102 | Smartphone   | Electronics |     300.00 |
+|        103 | Headphone    | Electronics |      30.00 |
+|        104 | keyboard     | Electronics |      20.00 |
+|        105 | Mouse        | Electronics |      15.00 |
++------------+--------------+-------------+------------+
+
+2.select distinct(product_id),(unit_price)from Products;
++------------+------------+
+| product_id | unit_price |
++------------+------------+
+|        101 |     500.00 |
+|        102 |     300.00 |
+|        103 |      30.00 |
+|        104 |      20.00 |
+|        105 |      15.00 |
++------------+------------+
+3.select  category from Products where category='Electronics';
++-------------+
+| category    |
++-------------+
+| Electronics |
+| Electronics |
+| Electronics |
+| Electronics |
+| Electronics |
++-------------+
+4. select product_id,product_name from Products where unit_price>100;
++------------+--------------+
+| product_id | product_name |
++------------+--------------+
+|        101 | Laptop       |
+|        102 | Smartphone   |
++------------+--------------+
+5. select avg(unit_price)from Products;
++-----------------+
+| avg(unit_price) |
++-----------------+
+|      173.000000 |
++-----------------+
+6.mysql> select max(unit_price) from Products;
++-----------------+
+| max(unit_price) |
++-----------------+
+|          500.00 |
++-----------------+
+7. select product_name,unit_price from Products order by unit_price desc;
++--------------+------------+
+| product_name | unit_price |
++--------------+------------+
+| Laptop       |     500.00 |
+| Smartphone   |     300.00 |
+| Headphone    |      30.00 |
+| keyboard     |      20.00 |
+| Mouse        |      15.00 |
++--------------+------------+
+8.select product_name,unit_price from Products where unit_price= 20 and 600;
++--------------+------------+
+| product_name | unit_price |
++--------------+------------+
+| keyboard     |      20.00 |
++--------------+------------+
+9.select product_name,category from Products order by category asc;
++--------------+-------------+
+| product_name | category    |
++--------------+-------------+
+| Laptop       | Electronics |
+| Smartphone   | Electronics |
+| Headphone    | Electronics |
+| keyboard     | Electronics |
+| Mouse        | Electronics |
++--------------+-------------+
