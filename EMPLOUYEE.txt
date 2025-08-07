@@ -1,0 +1,615 @@
+ 
+                                     EMPLOYEE TABLE      
+create database practice2;
+Query OK, 1 row affected (0.08 sec)
+
+mysql> use practice2;
+Database changed
+mysql> CREATE TABLE Employee (
+    -> EmpID INT PRIMARY KEY,
+    -> Name VARCHAR(50),
+    -> Department VARCHAR(50),
+    -> Gender VARCHAR(10),
+    -> Salary DECIMAL(10, 2),
+    -> Age INT,
+    -> Experience INT
+    -> );
+Query OK, 0 rows affected (0.11 sec)
+
+mysql> insert into Employee(EmpID,Name,Department,Gender,Salary,Age,Experience)values (1,'Alice','HR','Female',50000,28,3),(2, 'Bob', 'Finance', 'Male', 60000, 32, 5),
+    -> (3, 'Charlie', 'IT', 'Male', 70000, 30, 6),
+    -> (4, 'David', 'HR', 'Male', 48000, 45, 20),
+    -> (5, 'Eva', 'IT', 'Female', 72000, 29, 4),
+    -> (6, 'Frank', 'Finance', 'Male', 58000, 35, 8),
+    -> (7, 'Grace', 'Marketing', 'Female', 50000, 27, 2),
+    -> (8, 'Hannah', 'IT', 'Female', 75000, 31, 7),
+    -> (9, 'Ivy', 'Finance', 'Female', 62000, 26, 3),
+    -> (10, 'Jack', 'Marketing', 'Male', 52000, 38, 10),
+    -> (11, 'Kiran', 'IT', 'Male', 68000, 33, 9),
+    -> (12, 'Lily', 'HR', 'Female', 55000, 40, 15),
+    -> (13, 'Mohan', 'Finance', 'Male', 61000, 29, 4),
+    -> (14, 'Nina', 'Marketing', 'Female', 53000, 36, 11),
+    -> (15, 'Oscar', 'IT', 'Male', 71000, 34, 10);
+Query OK, 15 rows affected (0.04 sec)
+Records: 15  Duplicates: 0  Warnings: 0
+
+mysql> select * from Employee;
++-------+---------+------------+--------+----------+------+------------+
+| EmpID | Name    | Department | Gender | Salary   | Age  | Experience |
++-------+---------+------------+--------+----------+------+------------+
+|     1 | Alice   | HR         | Female | 50000.00 |   28 |          3 |
+|     2 | Bob     | Finance    | Male   | 60000.00 |   32 |          5 |
+|     3 | Charlie | IT         | Male   | 70000.00 |   30 |          6 |
+|     4 | David   | HR         | Male   | 48000.00 |   45 |         20 |
+|     5 | Eva     | IT         | Female | 72000.00 |   29 |          4 |
+|     6 | Frank   | Finance    | Male   | 58000.00 |   35 |          8 |
+|     7 | Grace   | Marketing  | Female | 50000.00 |   27 |          2 |
+|     8 | Hannah  | IT         | Female | 75000.00 |   31 |          7 |
+|     9 | Ivy     | Finance    | Female | 62000.00 |   26 |          3 |
+|    10 | Jack    | Marketing  | Male   | 52000.00 |   38 |         10 |
+|    11 | Kiran   | IT         | Male   | 68000.00 |   33 |          9 |
+|    12 | Lily    | HR         | Female | 55000.00 |   40 |         15 |
+|    13 | Mohan   | Finance    | Male   | 61000.00 |   29 |          4 |
+|    14 | Nina    | Marketing  | Female | 53000.00 |   36 |         11 |
+|    15 | Oscar   | IT         | Male   | 71000.00 |   34 |         10 |
++-------+---------+------------+--------+----------+------+------------+
+ select department,sum(salary) from Employee Group by Department, salary;
++------------+-------------+
+| department | sum(salary) |
++------------+-------------+
+| HR         |    50000.00 |
+| Finance    |    60000.00 |
+| IT         |    70000.00 |
+| HR         |    48000.00 |
+| IT         |    72000.00 |
+| Finance    |    58000.00 |
+| Marketing  |    50000.00 |
+| IT         |    75000.00 |
+| Finance    |    62000.00 |
+| Marketing  |    52000.00 |
+| IT         |    68000.00 |
+| HR         |    55000.00 |
+| Finance    |    61000.00 |
+| Marketing  |    53000.00 |
+| IT         |    71000.00 |
++------------+-------------+
+select department from employee group by  department having sum(salary)>200000;
++------------+
+| department |
++------------+
+| Finance    |
+| IT         |
++------------+
+mysql> select count(department) from employee group by department;
++-------------------+
+| count(department) |
++-------------------+
+|                 3 |
+|                 4 |
+|                 5 |
+|                 3 |
++-------------------+
+ysql> select avg(salary) from employee group by gender;
++--------------+
+| avg(salary)  |
++--------------+
+| 59571.428571 |
+| 61000.000000 |
++--------------+
+mysql> select gender,avg(salary) from employee group by gender;
++--------+--------------+
+| gender | avg(salary)  |
++--------+--------------+
+| Female | 59571.428571 |
+| Male   | 61000.000000 |
++--------+--------------+
+2 rows in set (0.00 sec)
+
+mysql> select gender,count(employee) from employee having count(employee)>5;
+ERROR 1054 (42S22): Unknown column 'employee' in 'field list'
+mysql>  select count(gender)from employee having count(gender)>5;
++---------------+
+| count(gender) |
++---------------+
+|            15 |
++---------------+
+1 row in set (0.00 sec)
+mysql>  select department,avg(salary) from employee  group by department,salary having avg(salary) >60000;
++------------+--------------+
+| department | avg(salary)  |
++------------+--------------+
+| IT         | 70000.000000 |
+| IT         | 72000.000000 |
+| IT         | 75000.000000 |
+| Finance    | 62000.000000 |
+| IT         | 68000.000000 |
+| Finance    | 61000.000000 |
+| IT         | 71000.000000 |
++------------+--------------+
+7 rows in set (0.00 sec)
+mysql> select department,count(gender)  from employee group by department,gender;
++------------+---------------+
+| department | count(gender) |
++------------+---------------+
+| HR         |             2 |
+| Finance    |             3 |
+| IT         |             3 |
+| HR         |             1 |
+| IT         |             2 |
+| Marketing  |             2 |
+| Finance    |             1 |
+| Marketing  |             1 |
++------------+---------------+
+8 rows in set (0.00 sec)
+mysql>  select department,avg(experience) from employee group by department  having avg(experience) >7;
++------------+-----------------+
+| department | avg(experience) |
++------------+-----------------+
+| HR         |         12.6667 |
+| IT         |          7.2000 |
+| Marketing  |          7.6667 |
++------------+-----------------+
+mysql>  select  department,avg(age) from employee group by department ;
++------------+----------+
+| department | avg(age) |
++------------+----------+
+| HR         |  37.6667 |
+| Finance    |  30.5000 |
+| IT         |  31.4000 |
+| Marketing  |  33.6667 |
++------------+----------+
+salary) from employee where gender = 'female' group by department having avg(salary)>6000;
++------------+--------+--------------+
+| department | gender | avg(salary)  |
++------------+--------+--------------+
+| HR         | Female | 52500.000000 |
+| IT         | Female | 73500.000000 |
+| Marketing  | Female | 51500.000000 |
+| Finance    | Female | 62000.000000 |
++------------+--------+--------------+
+mysql> select department,gender,avg(experience) from employee group by department,gender;
++------------+--------+-----------------+
+| department | gender | avg(experience) |
++------------+--------+-----------------+
+| HR         | Female |          9.0000 |
+| Finance    | Male   |          5.6667 |
+| IT         | Male   |          8.3333 |
+| HR         | Male   |         20.0000 |
+| IT         | Female |          5.5000 |
+| Marketing  | Female |          6.5000 |
+| Finance    | Female |          3.0000 |
+| Marketing  | Male   |         10.0000 |
++------------+--------+-----------------+
+select department  from employee group by department having avg(age)<30;
+Empty set (0.00 sec)
+select department from employee where gender='Female' group by department having count(*)>1;
++------------+
+| department |
++------------+
+| HR         |
+| IT         |
+| Marketing  |
++------------+
+mysql> select department from employee group by department having count(distinct gender)=2;
++------------+
+| department |
++------------+
+| Finance    |
+| HR         |
+| IT         |
+| Marketing  |
++------------+
+mysql> select department from employee group by department order by avg(experience)desc limit 1;
++------------+
+| department |
++------------+
+| HR         |
++------------+
+  SELECT department, gender, SUM(salary) from employee group by department,gender having sum(salary) > 100000;
++------------+--------+-------------+
+| department | gender | SUM(salary) |
++------------+--------+-------------+
+| HR         | Female |   105000.00 |
+| Finance    | Male   |   179000.00 |
+| IT         | Male   |   209000.00 |
+| IT         | Female |   147000.00 |
+| Marketing  | Female |   103000.00 |
++------------+--------+-------------+
+mysql> select department,count(*) from employee where age<35 group by department;
++------------+----------+
+| department | count(*) |
++------------+----------+
+| HR         |        1 |
+| Finance    |        3 |
+| IT         |        5 |
+| Marketing  |        1 |
++------------+----------+
+mysql> select department, max(salary) from employee group by department,salary limit 3;
++------------+-------------+
+| department | max(salary) |
++------------+-------------+
+| HR         |    50000.00 |
+| Finance    |    60000.00 |
+| IT         |    70000.00 |
++------------+-------------+
+mysql> select department from employee group by department having max(experience)>5;
++------------+
+| department |
++------------+
+| HR         |
+| Finance    |
+| IT         |
+| Marketing  |
++------------+
+mysql> select distinct(department)from employee where salary<55000;
++------------+
+| department |
++------------+
+| HR         |
+| Marketing  |
+
+
+                                                                       SALES TABLE
+
+ create database sale;
+Query OK, 1 row affected (0.02 sec)
+
+mysql> use sale;
+Database changed
+mysql> CREATE TABLE Sales (
+    -> SaleID INT PRIMARY KEY,
+    -> Salesperson VARCHAR(50),
+    -> Region VARCHAR(50),
+    -> Product VARCHAR(50),
+    -> Quantity INT,
+    -> SaleAmount DECIMAL(10,2)
+    -> );
+Query OK, 0 rows affected (0.05 sec)
+
+mysql> INSERT INTO Sales (SaleID, Salesperson, Region, Product, Quantity, SaleAmount) VALUES
+    -> (1, 'Alice', 'North', 'Laptop', 1, 1000.00),
+    -> (2, 'Bob', 'South', 'Mouse', 3, 75.00),
+    -> (3, 'Alice', 'North', 'Monitor', 2, 300.00),
+    -> (4, 'Charlie', 'East', 'Keyboard', 1, 50.00),
+    -> (5, 'Bob', 'South', 'Monitor', 1, 150.00),
+    -> (6, 'Alice', 'North', 'Mouse', 2, 50.00),
+    -> (7, 'Charlie', 'East', 'Laptop', 2, 2000.00),
+    -> (8, 'David', 'West', 'Laptop', 1, 1100.00),
+    -> (9, 'David', 'West', 'Mouse', 4, 100.00),
+    -> (10, 'Eve', 'South', 'Monitor', 3, 450.00),
+    -> (11, 'Eve', 'South', 'Keyboard', 2, 100.00),
+    -> (12, 'Eve', 'South', 'Mouse', 1, 25.00),
+    -> (13, 'Alice', 'North', 'Keyboard', 1, 60.00),
+    -> (14, 'Bob', 'South', 'Laptop', 1, 1200.00),
+    -> (15, 'Charlie', 'East', 'Mouse', 2, 50.00);
+Query OK, 15 rows affected (0.02 sec)
+Records: 15  Duplicates: 0  Warnings: 0
+
+mysql> select * from Sales;
++--------+-------------+--------+----------+----------+------------+
+| SaleID | Salesperson | Region | Product  | Quantity | SaleAmount |
++--------+-------------+--------+----------+----------+------------+
+|      1 | Alice       | North  | Laptop   |        1 |    1000.00 |
+|      2 | Bob         | South  | Mouse    |        3 |      75.00 |
+|      3 | Alice       | North  | Monitor  |        2 |     300.00 |
+|      4 | Charlie     | East   | Keyboard |        1 |      50.00 |
+|      5 | Bob         | South  | Monitor  |        1 |     150.00 |
+|      6 | Alice       | North  | Mouse    |        2 |      50.00 |
+|      7 | Charlie     | East   | Laptop   |        2 |    2000.00 |
+|      8 | David       | West   | Laptop   |        1 |    1100.00 |
+|      9 | David       | West   | Mouse    |        4 |     100.00 |
+|     10 | Eve         | South  | Monitor  |        3 |     450.00 |
+|     11 | Eve         | South  | Keyboard |        2 |     100.00 |
+|     12 | Eve         | South  | Mouse    |        1 |      25.00 |
+|     13 | Alice       | North  | Keyboard |        1 |      60.00 |
+|     14 | Bob         | South  | Laptop   |        1 |    1200.00 |
+|     15 | Charlie     | East   | Mouse    |        2 |      50.00 |
++--------+-------------+--------+----------+----------+------------+
+15 rows in set (0.00 sec)
+
+mysql> select sum(quantity) from Sales;
++---------------+
+| sum(quantity) |
++---------------+
+|            27 |
++---------------+
+1 row in set (0.00 sec)
+
+mysql> select salesperson,quantity from sales;
++-------------+----------+
+| salesperson | quantity |
++-------------+----------+
+| Alice       |        1 |
+| Bob         |        3 |
+| Alice       |        2 |
+| Charlie     |        1 |
+| Bob         |        1 |
+| Alice       |        2 |
+| Charlie     |        2 |
+| David       |        1 |
+| David       |        4 |
+| Eve         |        3 |
+| Eve         |        2 |
+| Eve         |        1 |
+| Alice       |        1 |
+| Bob         |        1 |
+| Charlie     |        2 |
++-------------+----------+
+15 rows in set (0.00 sec)
+
+mysql> select salesperson,quantity from sales where quantity >5;
+Empty set (0.00 sec)
+
+mysql> select salesperson,count(product) from sales;
+ERROR 1140 (42000): In aggregated query without GROUP BY, expression #1 of SELECT list contains nonaggregated column 'sale.sales.Salesperson'; this is incompatible with sql_mode=only_full_group_by
+mysql> select count(*) from sales group by salesperson, products;
+ERROR 1054 (42S22): Unknown column 'products' in 'group statement'
+mysql>  select count(*) from sales group by salesperson, product;
++----------+
+| count(*) |
++----------+
+|        1 |
+|        1 |
+|        1 |
+|        1 |
+|        1 |
+|        1 |
+|        1 |
+|        1 |
+|        1 |
+|        1 |
+|        1 |
+|        1 |
+|        1 |
+|        1 |
+|        1 |
++----------+
+15 rows in set (0.00 sec)
+
+mysql>   select count(*) from sales group by salesperson,product;
++----------+
+| count(*) |
++----------+
+|        1 |
+|        1 |
+|        1 |
+|        1 |
+|        1 |
+|        1 |
+|        1 |
+|        1 |
+|        1 |
+|        1 |
+|        1 |
+|        1 |
+|        1 |
+|        1 |
+|        1 |
++----------+
+15 rows in set (0.00 sec)
+
+mysql>  select salesperson count(*) from sales group by salesperson;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'count(*) from sales group by salesperson' at line 1
+mysql>  select salesperson,count(*) from sales group by salesperson;
++-------------+----------+
+| salesperson | count(*) |
++-------------+----------+
+| Alice       |        4 |
+| Bob         |        3 |
+| Charlie     |        3 |
+| David       |        2 |
+| Eve         |        3 |
++-------------+----------+
+5 rows in set (0.00 sec)
+
+mysql> select region,saleamount from sales where saleamount>1000;
++--------+------------+
+| region | saleamount |
++--------+------------+
+| East   |    2000.00 |
+| West   |    1100.00 |
+| South  |    1200.00 |
++--------+------------+
+3 rows in set (0.00 sec)
+
+mysql> SELECT Salesperson
+    -> FROM Sales
+    -> GROUP BY Salesperson
+    -> HAVING COUNT(DISTINCT Product) > 1;
++-------------+
+| Salesperson |
++-------------+
+| Alice       |
+| Bob         |
+| Charlie     |
+| David       |
+| Eve         |
++-------------+
+5 rows in set (0.00 sec)
+
+mysql> SELECT Region, Product, AVG(Quantity) AS AvgQuantity
+    -> FROM Sales
+    -> GROUP BY Region, Product
+    -> HAVING AVG(Quantity) > 1;
++--------+----------+-------------+
+| Region | Product  | AvgQuantity |
++--------+----------+-------------+
+| South  | Mouse    |      2.0000 |
+| North  | Monitor  |      2.0000 |
+| South  | Monitor  |      2.0000 |
+| North  | Mouse    |      2.0000 |
+| East   | Laptop   |      2.0000 |
+| West   | Mouse    |      4.0000 |
+| South  | Keyboard |      2.0000 |
+| East   | Mouse    |      2.0000 |
++--------+----------+-------------+
+8 rows in set (0.00 sec)
+
+mysql> SELECT Region, Product, AVG(Quantity) AS AvgQuantity
+    -> FROM Sales
+    -> GROUP BY Region, Product
+    -> HAVING AVG(Quantity) > 1;
++--------+----------+-------------+
+| Region | Product  | AvgQuantity |
++--------+----------+-------------+
+| South  | Mouse    |      2.0000 |
+| North  | Monitor  |      2.0000 |
+| South  | Monitor  |      2.0000 |
+| North  | Mouse    |      2.0000 |
+| East   | Laptop   |      2.0000 |
+| West   | Mouse    |      4.0000 |
+| South  | Keyboard |      2.0000 |
+| East   | Mouse    |      2.0000 |
++--------+----------+-------------+
+8 rows in set (0.00 sec)
+
+mysql> SELECT Salesperson, SUM(SaleAmount) AS TotalSales
+    -> FROM Sales
+    -> GROUP BY Salesperson
+    -> HAVING SUM(SaleAmount) BETWEEN 500 AND 1500;
++-------------+------------+
+| Salesperson | TotalSales |
++-------------+------------+
+| Alice       |    1410.00 |
+| Bob         |    1425.00 |
+| David       |    1200.00 |
+| Eve         |     575.00 |
++-------------+------------+
+4 rows in set (0.01 sec)
+
+mysql> SELECT Product, SUM(Quantity) AS TotalQuantity
+    -> FROM Sales
+    -> GROUP BY Product
+    -> HAVING SUM(Quantity) > 3;
++----------+---------------+
+| Product  | TotalQuantity |
++----------+---------------+
+| Laptop   |             5 |
+| Mouse    |            12 |
+| Monitor  |             6 |
+| Keyboard |             4 |
++----------+---------------+
+4 rows in set (0.00 sec)
+
+mysql> ^C
+mysql> SELECT DISTINCT Salesperson
+    -> FROM Sales
+    -> WHERE Product = 'Laptop';
++-------------+
+| Salesperson |
++-------------+
+| Alice       |
+| Charlie     |
+| David       |
+| Bob         |
++-------------+
+4 rows in set (0.00 sec)
+
+mysql> SELECT Salesperson, Region, SUM(SaleAmount) AS TotalSales
+    -> FROM Sales
+    -> GROUP BY Salesperson, Region
+    -> HAVING SUM(SaleAmount) > 500;
++-------------+--------+------------+
+| Salesperson | Region | TotalSales |
++-------------+--------+------------+
+| Alice       | North  |    1410.00 |
+| Bob         | South  |    1425.00 |
+| Charlie     | East   |    2100.00 |
+| David       | West   |    1200.00 |
+| Eve         | South  |     575.00 |
++-------------+--------+------------+
+5 rows in set (0.00 sec)
+
+mysql> SELECT Salesperson, Region
+    -> FROM Sales
+    -> GROUP BY Salesperson, Region
+    -> HAVING COUNT(DISTINCT Product) >= 2;
++-------------+--------+
+| Salesperson | Region |
++-------------+--------+
+| Alice       | North  |
+| Bob         | South  |
+| Charlie     | East   |
+| David       | West   |
+| Eve         | South  |
++-------------+--------+
+5 rows in set (0.00 sec)
+
+mysql> SELECT Product
+    -> FROM Sales
+    -> GROUP BY Product
+    -> HAVING COUNT(DISTINCT Region) > 1;
++----------+
+| Product  |
++----------+
+| Keyboard |
+| Laptop   |
+| Monitor  |
+| Mouse    |
++----------+
+4 rows in set (0.00 sec)
+
+mysql> SELECT Product, COUNT(*) AS TotalSales
+    -> FROM Sales
+    -> GROUP BY Product
+    -> HAVING COUNT(*) >= 2;
++----------+------------+
+| Product  | TotalSales |
++----------+------------+
+| Laptop   |          4 |
+| Mouse    |          5 |
+| Monitor  |          3 |
+| Keyboard |          3 |
++----------+------------+
+4 rows in set (0.00 sec)
+
+mysql> SELECT Salesperson, Region, SUM(Quantity) AS TotalQuantity
+    -> FROM Sales
+    -> GROUP BY Salesperson, Region;
++-------------+--------+---------------+
+| Salesperson | Region | TotalQuantity |
++-------------+--------+---------------+
+| Alice       | North  |             6 |
+| Bob         | South  |             5 |
+| Charlie     | East   |             5 |
+| David       | West   |             5 |
+| Eve         | South  |             6 |
++-------------+--------+---------------+
+5 rows in set (0.00 sec)
+
+mysql> SELECT Salesperson, COUNT(*) AS Transactions, SUM(SaleAmount) AS TotalSales
+    -> FROM Sales
+    -> GROUP BY Salesperson
+    -> HAVING COUNT(*) > 3 AND SUM(SaleAmount) > 1000;
++-------------+--------------+------------+
+| Salesperson | Transactions | TotalSales |
++-------------+--------------+------------+
+| Alice       |            4 |    1410.00 |
++-------------+--------------+------------+
+1 row in set (0.00 sec)
+
+mysql> SELECT Region, AVG(SaleAmount) AS AvgSaleAmount
+    -> FROM Sales
+    -> GROUP BY Region
+    -> HAVING AVG(SaleAmount) > 200;
++--------+---------------+
+| Region | AvgSaleAmount |
++--------+---------------+
+| North  |    352.500000 |
+| South  |    333.333333 |
+| East   |    700.000000 |
+| West   |    600.000000 |
++--------+---------------+
+4 rows in set (0.00 sec)
+
+mysql> SELECT Region, Product, SUM(Quantity) AS TotalQuantity
+    -> FROM Sales
+    -> GROUP BY Region, Product
+    -> HAVING SUM(Quantity) > 3;
++--------+---------+---------------+
+| Region | Product | TotalQuantity |
++--------+---------+---------------+
+| South  | Mouse   |             4 |
+| South  | Monitor |             4 |
+| West   | Mouse   |             4 |
++--------+---------+---------------+
