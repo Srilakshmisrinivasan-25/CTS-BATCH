@@ -1,0 +1,425 @@
+Employee table -any all
+CREATE TABLE Employees (
+emp_id INT,
+name VARCHAR(50),
+salary INT,
+department VARCHAR(50)
+);
+
+INSERT INTO Employees (emp_id, name, salary, department) VALUES
+(1, &#39;Alice&#39;, 50000, &#39;HR&#39;),
+(2, &#39;Bob&#39;, 60000, &#39;IT&#39;),
+(3, &#39;Charlie&#39;, 70000, &#39;HR&#39;),
+(4, &#39;David&#39;, 55000, &#39;IT&#39;),
+(5, &#39;Eve&#39;, 65000, &#39;Sales&#39;),
+(6, &#39;Frank&#39;, 52000, &#39;Finance&#39;),
+(7, &#39;Grace&#39;, 48000, &#39;HR&#39;),
+(8, &#39;Hannah&#39;, 75000, &#39;IT&#39;),
+(9, &#39;Ian&#39;, 50000, &#39;Sales&#39;),
+(10, &#39;Jack&#39;, 58000, &#39;Finance&#39;);
+
+Section 1: Using ANY
+1. Get employees whose salary is greater than ANY employee in the HR department.
+2. Get employees whose salary is less than ANY employee in the IT department.
+3. Find employees whose salary is equal to ANY salary in the Finance department.
+4. Find employees whose salary is greater than ANY salary in the Sales department.
+5. Find employees whose salary is less than ANY employee in the Finance department.
+6. Find employees whose salary is not equal to ANY salary in the HR department.
+(Hint: Use != ALL instead of != ANY for correct logic.)
+7. Select employees from IT who earn more than ANY HR employee.
+8. Select employees from Sales who earn less than ANY IT employee.
+9. List employees whose salary is higher than ANY employee in a different department.
+10. Find employees whose salary is greater than ANY employee named &#39;Grace&#39;.
+
+   Section 2: Using ALL
+11. Get employees whose salary is greater than ALL employees in the HR department.
+12. Find employees whose salary is less than ALL employees in the IT department.
+13. Find employees whose salary is equal to ALL employees in the Sales department.
+14. List employees who earn more than ALL employees in the Finance department.
+15. Get employees whose salary is less than ALL employees in the Sales department.
+16. Find employees whose salary is not equal to ALL employees in the HR department.
+17. Find employees from HR who earn more than ALL employees in Sales.
+18. Find employees from Finance who earn less than ALL employees in IT.
+19. Select employees whose salary is higher than ALL employees whose salary is under 60000.
+20. List employees whose salary is less than ALL employees earning above 60000.
+
+ANSWERS:
+
+ create database database9;
+Query OK, 1 row affected (0.10 sec)
+
+mysql> use database9
+Database changed
+mysql> CREATE TABLE Employees (
+    -> emp_id INT,
+    -> name VARCHAR(50),
+    -> salary INT,
+    -> department VARCHAR(50)
+    -> );
+Query OK, 0 rows affected (0.12 sec)
+
+mysql> INSERT INTO Employees (emp_id, name, salary, department) VALUES
+    -> (1, 'Alice', 50000, 'HR'),
+    -> (2, 'Bob', 60000, 'IT'),
+    -> (3, 'Charlie', 70000, 'HR'),
+    -> (4, 'David', 55000, 'IT'),
+    -> (5, 'Eve', 65000, 'Sales'),
+    -> (6, 'Frank', 52000, 'Finance'),
+    -> (7, 'Grace', 48000, 'HR'),
+    -> (8, 'Hannah', 75000, 'IT'),
+    -> (9, 'Ian', 50000, 'Sales'),
+    -> (10, 'Jack', 58000, 'Finance');
+Query OK, 10 rows affected (0.03 sec)
+Records: 10  Duplicates: 0  Warnings: 0
+
+mysql> select * from Employees;
++--------+---------+--------+------------+
+| emp_id | name    | salary | department |
++--------+---------+--------+------------+
+|      1 | Alice   |  50000 | HR         |
+|      2 | Bob     |  60000 | IT         |
+|      3 | Charlie |  70000 | HR         |
+|      4 | David   |  55000 | IT         |
+|      5 | Eve     |  65000 | Sales      |
+|      6 | Frank   |  52000 | Finance    |
+|      7 | Grace   |  48000 | HR         |
+|      8 | Hannah  |  75000 | IT         |
+|      9 | Ian     |  50000 | Sales      |
+|     10 | Jack    |  58000 | Finance    |
++--------+---------+--------+------------+
+10 rows in set (0.00 sec)
+
+mysql> select name,salary,department from Employees group by department having salary>any(select salary from employees where department='hr';
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+mysql> select * from Employees group by department having salary>any(select salary from employees where department='hr';
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+mysql> select sum(salary),department from Employees group by department havi g sum(salary)>any(select sum(salary) from employees where department='hr');
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'ving sum(salary)>any(select sum(salary) from employees where department='hr')' at line 1
+mysql> SELECT department, MAX(salary) AS max_salary
+    -> FROM Employees
+    -> GROUP BY department
+    -> HAVING MAX(salary) > ANY (
+    ->     SELECT salary
+    ->     FROM Employees
+    ->     WHERE department = 'HR'
+    -> );
++------------+------------+
+| department | max_salary |
++------------+------------+
+| HR         |      70000 |
+| IT         |      75000 |
+| Sales      |      65000 |
+| Finance    |      58000 |
++------------+------------+
+4 rows in set (0.02 sec)
+
+mysql> select name,min(salary) as MINSALARY,department
+    -> from employees group by employee having min(salary)<any(select salaryfrom employees where department ='IT');
+ERROR 1054 (42S22): Unknown column 'employee' in 'group statement'
+mysql> select name,min(salary) as MINSALARY,department
+    ->  from employees group by DEPARTMENT  having min(salary)<any(select salaryfrom employees where department ='IT');
+ERROR 1054 (42S22): Unknown column 'salaryfrom' in 'field list'
+mysql> SELECT department, MIN(salary) AS MINSALARY
+    -> FROM Employees
+    -> GROUP BY department
+    -> HAVING MIN(salary) < ANY (
+    ->     SELECT salary
+    ->     FROM Employees
+    ->     WHERE department = 'IT'
+    -> );
++------------+-----------+
+| department | MINSALARY |
++------------+-----------+
+| HR         |     48000 |
+| IT         |     55000 |
+| Sales      |     50000 |
+| Finance    |     52000 |
++------------+-----------+
+4 rows in set (0.00 sec)
+
+mysql> select * from employees where salary = any (select salary from employee where department ='finance');
+ERROR 1146 (42S02): Table 'database9.employee' doesn't exist
+mysql> select name,salary,department from employees where salary = any (select salary from employee where department ='finance');
+ERROR 1146 (42S02): Table 'database9.employee' doesn't exist
+mysql> select * from employees where salary = any (select salary from employees where department ='finance');
++--------+-------+--------+------------+
+| emp_id | name  | salary | department |
++--------+-------+--------+------------+
+|      6 | Frank |  52000 | Finance    |
+|     10 | Jack  |  58000 | Finance    |
++--------+-------+--------+------------+
+2 rows in set (0.01 sec)
+
+mysql> select * from employees where salary>any (select salary from employees where department ='sales');
++--------+---------+--------+------------+
+| emp_id | name    | salary | department |
++--------+---------+--------+------------+
+|      2 | Bob     |  60000 | IT         |
+|      3 | Charlie |  70000 | HR         |
+|      4 | David   |  55000 | IT         |
+|      5 | Eve     |  65000 | Sales      |
+|      6 | Frank   |  52000 | Finance    |
+|      8 | Hannah  |  75000 | IT         |
+|     10 | Jack    |  58000 | Finance    |
++--------+---------+--------+------------+
+7 rows in set (0.00 sec)
+
+mysql>  select * from employees where salary<any (select salary from employees where department ='finance');
++--------+-------+--------+------------+
+| emp_id | name  | salary | department |
++--------+-------+--------+------------+
+|      1 | Alice |  50000 | HR         |
+|      4 | David |  55000 | IT         |
+|      6 | Frank |  52000 | Finance    |
+|      7 | Grace |  48000 | HR         |
+|      9 | Ian   |  50000 | Sales      |
++--------+-------+--------+------------+
+5 rows in set (0.00 sec)
+
+mysql> select * from employees where salary <> any(select salary from employees where depatement ='hr');
+ERROR 1054 (42S22): Unknown column 'depatement' in 'where clause'
+mysql>  select * from employees where salary <> any(select salary from employees where department ='hr');
++--------+---------+--------+------------+
+| emp_id | name    | salary | department |
++--------+---------+--------+------------+
+|      1 | Alice   |  50000 | HR         |
+|      2 | Bob     |  60000 | IT         |
+|      3 | Charlie |  70000 | HR         |
+|      4 | David   |  55000 | IT         |
+|      5 | Eve     |  65000 | Sales      |
+|      6 | Frank   |  52000 | Finance    |
+|      7 | Grace   |  48000 | HR         |
+|      8 | Hannah  |  75000 | IT         |
+|      9 | Ian     |  50000 | Sales      |
+|     10 | Jack    |  58000 | Finance    |
++--------+---------+--------+------------+
+10 rows in set (0.00 sec)
+
+mysql> select * from employees where salary <> all(select salary from employees where department ='hr');
++--------+--------+--------+------------+
+| emp_id | name   | salary | department |
++--------+--------+--------+------------+
+|      2 | Bob    |  60000 | IT         |
+|      4 | David  |  55000 | IT         |
+|      5 | Eve    |  65000 | Sales      |
+|      6 | Frank  |  52000 | Finance    |
+|      8 | Hannah |  75000 | IT         |
+|     10 | Jack   |  58000 | Finance    |
++--------+--------+--------+------------+
+6 rows in set (0.00 sec)
+
+mysql> select * from employees where department='it',salary>any(select salary from employees where department='hr');
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ',salary>any(select salary from employees where department='hr')' at line 1
+mysql> SELECT *
+    -> FROM Employees
+    -> WHERE department = 'IT'
+    ->   AND salary > ANY (
+    ->       SELECT salary
+    ->       FROM Employees
+    ->       WHERE department = 'HR'
+    ->   );
++--------+--------+--------+------------+
+| emp_id | name   | salary | department |
++--------+--------+--------+------------+
+|      2 | Bob    |  60000 | IT         |
+|      4 | David  |  55000 | IT         |
+|      8 | Hannah |  75000 | IT         |
++--------+--------+--------+------------+
+3 rows in set (0.00 sec)
+
+mysql> select * from employees where department='sales' and salary< any (select salary from employees where department ='it');
++--------+------+--------+------------+
+| emp_id | name | salary | department |
++--------+------+--------+------------+
+|      5 | Eve  |  65000 | Sales      |
+|      9 | Ian  |  50000 | Sales      |
++--------+------+--------+------------+
+2 rows in set (0.00 sec)
+
+mysql> select * from employees where salary>any salary>(select salary from employees where department;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'salary>(select salary from employees where department' at line 1
+mysql> SELECT *
+    -> FROM Employees AS e1
+    -> WHERE salary > ANY (
+    ->     SELECT salary
+    ->     FROM Employees AS e2
+    ->     WHERE e2.department <> e1.department
+    -> );
++--------+---------+--------+------------+
+| emp_id | name    | salary | department |
++--------+---------+--------+------------+
+|      2 | Bob     |  60000 | IT         |
+|      3 | Charlie |  70000 | HR         |
+|      4 | David   |  55000 | IT         |
+|      5 | Eve     |  65000 | Sales      |
+|      6 | Frank   |  52000 | Finance    |
+|      8 | Hannah  |  75000 | IT         |
+|      9 | Ian     |  50000 | Sales      |
+|     10 | Jack    |  58000 | Finance    |
++--------+---------+--------+------------+
+8 rows in set (0.00 sec)
+
+mysql> select * from employees where salary >any
+    -> (select salary from employee where name ='grace');
+ERROR 1146 (42S02): Table 'database9.employee' doesn't exist
+mysql>  select * from employees where salary >any
+    -> (select salary from employees where name ='grace');
++--------+---------+--------+------------+
+| emp_id | name    | salary | department |
++--------+---------+--------+------------+
+|      1 | Alice   |  50000 | HR         |
+|      2 | Bob     |  60000 | IT         |
+|      3 | Charlie |  70000 | HR         |
+|      4 | David   |  55000 | IT         |
+|      5 | Eve     |  65000 | Sales      |
+|      6 | Frank   |  52000 | Finance    |
+|      8 | Hannah  |  75000 | IT         |
+|      9 | Ian     |  50000 | Sales      |
+|     10 | Jack    |  58000 | Finance    |
++--------+---------+--------+------------+
+9 rows in set (0.00 sec)
+
+mysql> select * from employees where salary>all(select salary from employeeswhere department='hr');
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '='hr')' at line 1
+mysql> select * from employees where salary>all(select salary from employees where department='hr');
++--------+--------+--------+------------+
+| emp_id | name   | salary | department |
++--------+--------+--------+------------+
+|      8 | Hannah |  75000 | IT         |
++--------+--------+--------+------------+
+1 row in set (0.00 sec)
+
+mysql> select * from employees whee salary<all(select salary from employees  where department='it');
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'salary<all(select salary from employees  where department='it')' at line 1
+mysql> select * from employees where salary<all(select salary from employeeswhere department='it');
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '='it')' at line 1
+mysql> select * from employees where salary<all(select salary from employees where department='it');
++--------+-------+--------+------------+
+| emp_id | name  | salary | department |
++--------+-------+--------+------------+
+|      1 | Alice |  50000 | HR         |
+|      6 | Frank |  52000 | Finance    |
+|      7 | Grace |  48000 | HR         |
+|      9 | Ian   |  50000 | Sales      |
++--------+-------+--------+------------+
+4 rows in set (0.00 sec)
+
+mysql> select * from employees where salary=all(select salary from employees where department='sales');
+Empty set (0.00 sec)
+
+mysql> select * from employees where salary>all(select salary from employees where department ='finance');
++--------+---------+--------+------------+
+| emp_id | name    | salary | department |
++--------+---------+--------+------------+
+|      2 | Bob     |  60000 | IT         |
+|      3 | Charlie |  70000 | HR         |
+|      5 | Eve     |  65000 | Sales      |
+|      8 | Hannah  |  75000 | IT         |
++--------+---------+--------+------------+
+4 rows in set (0.00 sec)
+
+mysql> select * from employees where salary<all(select salary from employees where department ='sales');
++--------+-------+--------+------------+
+| emp_id | name  | salary | department |
++--------+-------+--------+------------+
+|      7 | Grace |  48000 | HR         |
++--------+-------+--------+------------+
+1 row in set (0.00 sec)
+
+mysql> select * from employees where salary<>all(select salary from employees where department ='hr');
++--------+--------+--------+------------+
+| emp_id | name   | salary | department |
++--------+--------+--------+------------+
+|      2 | Bob    |  60000 | IT         |
+|      4 | David  |  55000 | IT         |
+|      5 | Eve    |  65000 | Sales      |
+|      6 | Frank  |  52000 | Finance    |
+|      8 | Hannah |  75000 | IT         |
+|     10 | Jack   |  58000 | Finance    |
++--------+--------+--------+------------+
+6 rows in set (0.00 sec)
+
+mysql> select * from employees where department ='hr'<>all(select salary from employees where department ='sales');
++--------+---------+--------+------------+
+| emp_id | name    | salary | department |
++--------+---------+--------+------------+
+|      1 | Alice   |  50000 | HR         |
+|      2 | Bob     |  60000 | IT         |
+|      3 | Charlie |  70000 | HR         |
+|      4 | David   |  55000 | IT         |
+|      5 | Eve     |  65000 | Sales      |
+|      6 | Frank   |  52000 | Finance    |
+|      7 | Grace   |  48000 | HR         |
+|      8 | Hannah  |  75000 | IT         |
+|      9 | Ian     |  50000 | Sales      |
+|     10 | Jack    |  58000 | Finance    |
++--------+---------+--------+------------+
+10 rows in set (0.00 sec)
+
+mysql>  select * from employees where department ='hr'>all(select salary from employees where department ='sales');
+Empty set (0.00 sec)
+
+mysql> select * from employees where department ='finance'<all(select salary from employees where department ='it');
++--------+---------+--------+------------+
+| emp_id | name    | salary | department |
++--------+---------+--------+------------+
+|      1 | Alice   |  50000 | HR         |
+|      2 | Bob     |  60000 | IT         |
+|      3 | Charlie |  70000 | HR         |
+|      4 | David   |  55000 | IT         |
+|      5 | Eve     |  65000 | Sales      |
+|      6 | Frank   |  52000 | Finance    |
+|      7 | Grace   |  48000 | HR         |
+|      8 | Hannah  |  75000 | IT         |
+|      9 | Ian     |  50000 | Sales      |
+|     10 | Jack    |  58000 | Finance    |
++--------+---------+--------+------------+
+10 rows in set (0.00 sec)
+
+mysql> select * from employees where salary>all(select salary from employees where salary ='60000');
++--------+---------+--------+------------+
+| emp_id | name    | salary | department |
++--------+---------+--------+------------+
+|      3 | Charlie |  70000 | HR         |
+|      5 | Eve     |  65000 | Sales      |
+|      8 | Hannah  |  75000 | IT         |
++--------+---------+--------+------------+
+3 rows in set (0.00 sec)
+
+mysql> select * from employees where salary>all(select salary from employees where salary <'60000');
++--------+---------+--------+------------+
+| emp_id | name    | salary | department |
++--------+---------+--------+------------+
+|      2 | Bob     |  60000 | IT         |
+|      3 | Charlie |  70000 | HR         |
+|      5 | Eve     |  65000 | Sales      |
+|      8 | Hannah  |  75000 | IT         |
++--------+---------+--------+------------+
+4 rows in set (0.00 sec)
+
+mysql>  select * from employees where salary>all(select salary from employees where salary <60000);
++--------+---------+--------+------------+
+| emp_id | name    | salary | department |
++--------+---------+--------+------------+
+|      2 | Bob     |  60000 | IT         |
+|      3 | Charlie |  70000 | HR         |
+|      5 | Eve     |  65000 | Sales      |
+|      8 | Hannah  |  75000 | IT         |
++--------+---------+--------+------------+
+4 rows in set (0.00 sec)
+
+mysql> select * from employees where salary>all(select salary from employees where salary >60000);
+Empty set (0.00 sec)
+
+mysql> select * from employees where salary<all(select salary from employees where salary >60000);
++--------+-------+--------+------------+
+| emp_id | name  | salary | department |
++--------+-------+--------+------------+
+|      1 | Alice |  50000 | HR         |
+|      2 | Bob   |  60000 | IT         |
+|      4 | David |  55000 | IT         |
+|      6 | Frank |  52000 | Finance    |
+|      7 | Grace |  48000 | HR         |
+|      9 | Ian   |  50000 | Sales      |
+|     10 | Jack  |  58000 | Finance    |
++--------+-------+--------+------------+
