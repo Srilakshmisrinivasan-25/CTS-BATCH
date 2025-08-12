@@ -1,0 +1,285 @@
+ 
+Joins 
+1. Employees Table
+CREATE TABLE Employees (
+    emp_id INT PRIMARY KEY,
+    name VARCHAR(50),
+    department_id INT,
+    salary INT
+);
+
+INSERT INTO Employees (emp_id, name, department_id, salary) VALUES
+(1, 'Alice', 101, 60000),
+(2, 'Bob', 102, 55000),
+(3, 'Charlie', 101, 70000),
+(4, 'David', 103, 48000),
+(5, 'Eve', NULL, 75000),
+(6, 'Frank', 104, 52000),
+(7, 'Grace', 102, 58000),
+(8, 'Hannah', NULL, 62000);
+
+🧱 2. Departments Table
+CREATE TABLE Departments (
+    department_id INT PRIMARY KEY,
+    department_name VARCHAR(50),
+    location VARCHAR(50)
+);
+
+INSERT INTO Departments (department_id, department_name, location) VALUES
+(101, 'HR', 'New York'),
+(102, 'IT', 'San Francisco'),
+(103, 'Finance', 'Chicago'),
+(104, 'Sales', 'Boston'),
+(105, 'Marketing', 'Los Angeles');
+
+🔍 20 Hands-on SQL JOIN Questions
+
+🔹 INNER JOIN
+List all employees along with their department names.
+Show the names of employees who work in the IT department.
+Get the names and locations of departments where at least one employee works.
+Find employees who work in the same location as the 'HR' department.
+List department names and employee count (only departments with employees).
+
+🔹 LEFT JOIN
+List all employees and their departments (even if they don’t belsong to any department).
+Find employees who are not assigned to any department.
+List all departments and the nam=es of employees working in them (include departments without employees).
+Show employee names and department names, replacing NULLs with 'Unassigned'.
+Find departments where no employees are assigned.
+
+🔹 RIGHT JOIN (use LEFT JOIN with reversed tables if using SQLite/MySQL)
+Show all departments and the employees working in them (even if no employees).
+(Use RIGHT JOIN or flip the LEFT JOIN if not supported)
+List all employees and their department locations.
+
+🔹 FULL OUTER JOIN (Emulated in MySQL using UNION of LEFT and RIGHT JOIN)
+List all employees and departments, even if they don't match.
+(Helpful to find both unassigned employees and empty departments)
+Show which employees or departments are missing a match.
+
+🔹 SELF JOIN
+Find all pairs of employees who work in the same department.
+List employees along with their colleagues in the same department (exclude self).
+Find all employee pairs where one earns more than the other.
+List each employee with the name of the highest-paid person in their department.
+
+🔹 CROSS JOIN
+List all possible employee-department combinations.
+Count how many total combinations of employees and departments exist.
+create database database10;
+Query OK, 1 row affected (0.07 sec)
+
+mysql> use database10;
+Database changed
+mysql> ^C
+mysql> CREATE TABLE Employees (
+    ->     emp_id INT PRIMARY KEY,
+    ->     name VARCHAR(50),
+    ->     department_id INT,
+    ->     salary INT
+    -> );
+Query OK, 0 rows affected (0.08 sec)
+
+mysql> INSERT INTO Employees (emp_id, name, department_id, salary) VALUES
+    -> (1, 'Alice', 101, 60000),
+    -> (2, 'Bob', 102, 55000),
+    -> (3, 'Charlie', 101, 70000),
+    -> (4, 'David', 103, 48000),
+    -> (5, 'Eve', NULL, 75000),
+    -> (6, 'Frank', 104, 52000),
+    -> (7, 'Grace', 102, 58000),
+    -> (8, 'Hannah', NULL, 62000);
+Query OK, 8 rows affected (0.02 sec)
+Records: 8  Duplicates: 0  Warnings: 0
+
+mysql> CREATE TABLE Departments (
+    ->     department_id INT PRIMARY KEY,
+    ->     department_name VARCHAR(50),
+    ->     location VARCHAR(50)
+    -> );
+Query OK, 0 rows affected (0.05 sec)
+
+mysql> INSERT INTO Departments (department_id, department_name, location) VALUES
+    -> (101, 'HR', 'New York'),
+    -> (102, 'IT', 'San Francisco'),
+    -> (103, 'Finance', 'Chicago'),
+    -> (104, 'Sales', 'Boston'),
+    -> (105, 'Marketing', 'Los Angeles');
+Query OK, 5 rows affected (0.01 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+
+mysql> select * from employees;
++--------+---------+---------------+--------+
+| emp_id | name    | department_id | salary |
++--------+---------+---------------+--------+
+|      1 | Alice   |           101 |  60000 |
+|      2 | Bob     |           102 |  55000 |
+|      3 | Charlie |           101 |  70000 |
+|      4 | David   |           103 |  48000 |
+|      5 | Eve     |          NULL |  75000 |
+|      6 | Frank   |           104 |  52000 |
+|      7 | Grace   |           102 |  58000 |
+|      8 | Hannah  |          NULL |  62000 |
++--------+---------+---------------+--------+
+8 rows in set (0.01 sec)
+
+mysql> select * from departments;
++---------------+-----------------+---------------+
+| department_id | department_name | location      |
++---------------+-----------------+---------------+
+|           101 | HR              | New York      |
+|           102 | IT              | San Francisco |
+|           103 | Finance         | Chicago       |
+|           104 | Sales           | Boston        |
+|           105 | Marketing       | Los Angeles   |
++---------------+-----------------+---------------+
+mysql> SELECT e.emp_id,
+    ->        e.name,
+    ->        e.salary,
+    ->        d.department_name
+    -> FROM Employees e
+    -> INNER JOIN Departments d
+    ->     ON e.department_id = d.department_id;
++--------+---------+--------+-----------------+
+| emp_id | name    | salary | department_name |
++--------+---------+--------+-----------------+
+|      1 | Alice   |  60000 | HR              |
+|      2 | Bob     |  55000 | IT              |
+|      3 | Charlie |  70000 | HR              |
+|      4 | David   |  48000 | Finance         |
+|      6 | Frank   |  52000 | Sales           |
+|      7 | Grace   |  58000 | IT              |
++--------+---------+--------+-----------------+
+
++-------+
+| name  |
++-------+
+| Bob   |
+| Grace |
++-------+
+6 rows in set (0.00 sec)
+mysql> SELECT d.department_name, d.location
+    -> FROM Departments d
+    -> INNER JOIN Employees e
+    ->     ON e.department_id = d.department_id
+    -> GROUP BY d.department_name, d.location
+    -> HAVING COUNT(e.emp_id) >= 1;
++-----------------+---------------+
+| department_name | location      |
++-----------------+---------------+
+| HR              | New York      |
+| IT              | San Francisco |
+| Finance         | Chicago       |
+| Sales           | Boston        |
++-----------------+---------------+
+
+mysql> SELECT e.name, d.department_name, d.location
+    -> FROM Employees e
+    -> INNER JOIN Departments d
+    ->     ON e.department_id = d.department_id
+    -> WHERE d.location = (
+    ->     SELECT location
+    ->     FROM Departments
+    ->     WHERE department_name = 'HR'
+    -> );
++---------+-----------------+----------+
+| name    | department_name | location |
++---------+-----------------+----------+
+| Alice   | HR              | New York |
+| Charlie | HR              | New York |
++---------+-----------------+----------+
+2 rows in set (0.00 sec)
+
+mysql> SELECT d.department_name, COUNT(e.emp_id) AS employee_count
+    -> FROM Departments d
+    -> INNER JOIN Employees e
+    ->     ON d.department_id = e.department_id
+    -> GROUP BY d.department_name;
++-----------------+----------------+
+| department_name | employee_count |
++-----------------+----------------+
+| HR              |              2 |
+| IT              |              2 |
+| Finance         |              1 |
+| Sales           |              1 |
++-----------------+----------------+
+mysql> SELECT e.emp_id,
+    ->        e.name AS employee_name,
+    ->        d.department_name,
+    ->        d.location
+    -> FROM Employees e
+    -> LEFT JOIN Departments d
+    ->     ON e.department_id = d.department_id;
++--------+---------------+-----------------+---------------+
+| emp_id | employee_name | department_name | location      |
++--------+---------------+-----------------+---------------+
+|      1 | Alice         | HR              | New York      |
+|      2 | Bob           | IT              | San Francisco |
+|      3 | Charlie       | HR              | New York      |
+|      4 | David         | Finance         | Chicago       |
+|      5 | Eve           | NULL            | NULL          |
+|      6 | Frank         | Sales           | Boston        |
+|      7 | Grace         | IT              | San Francisco |
+|      8 | Hannah        | NULL            | NULL          |
++--------+---------------+-----------------+---------------+
+
+mysql> SELECT e.emp_id, e.name, e.department_id
+    -> FROM Employees e
+    -> LEFT JOIN Departments d
+    ->     ON e.department_id = d.department_id
+    -> WHERE d.department_id IS NULL;
++--------+--------+---------------+
+| emp_id | name   | department_id |
++--------+--------+---------------+
+|      5 | Eve    |          NULL |
+|      8 | Hannah |          NULL |
++--------+--------+---------------+
+2 rows in set (0.01 sec)
+
+mysql> SELECT d.department_name, e.name AS employee_name
+    -> FROM Departments d
+    -> LEFT JOIN Employees e
+    ->     ON d.department_id = e.department_id;
++-----------------+---------------+
+| department_name | employee_name |
++-----------------+---------------+
+| HR              | Charlie       |
+| HR              | Alice         |
+| IT              | Grace         |
+| IT              | Bob           |
+| Finance         | David         |
+| Sales           | Frank         |
+| Marketing       | NULL          |
++-----------------+---------------+
+7 rows in set (0.00 sec)
+
+mysql> SELECT e.name AS employee_name,
+    ->        COALESCE(d.department_name, 'Unassigned') AS department_name
+    -> FROM Employees e
+    -> LEFT JOIN Departments d
+    ->     ON e.department_id = d.department_id;
++---------------+-----------------+
+| employee_name | department_name |
++---------------+-----------------+
+| Alice         | HR              |
+| Bob           | IT              |
+| Charlie       | HR              |
+| David         | Finance         |
+| Eve           | Unassigned      |
+| Frank         | Sales           |
+| Grace         | IT              |
+| Hannah        | Unassigned      |
++---------------+-----------------+
+8 rows in set (0.01 sec)
+
+mysql> SELECT d.department_name
+    -> FROM Departments d
+    -> LEFT JOIN Employees e
+    ->     ON d.department_id = e.department_id
+    -> WHERE e.emp_id IS NULL;
++-----------------+
+| department_name |
++-----------------+
+| Marketing       |
++-----------------+
